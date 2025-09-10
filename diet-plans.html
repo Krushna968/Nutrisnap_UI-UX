@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Diet Plans - NutriSnap</title>
+    <link rel="stylesheet" href="css/style.css">
+    <meta name="description" content="Generate personalized meal plans based on goals and dietary preferences.">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo"><img src="images/logo.jpg" alt="NutriSnap" style="height: 40px; margin-right: 0.5rem;">NutriSnap</a>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="food-identification.html" class="nav-link">Identify Food</a></li>
+                <li><a href="nutrition-info.html" class="nav-link">Nutrition Info</a></li>
+                <li><a href="bmi-calculator.html" class="nav-link">BMI Calculator</a></li>
+                <li><a href="rda-calculator.html" class="nav-link">RDA</a></li>
+                <li><a href="diet-plans.html" class="nav-link active">Diet Plans</a></li>
+            </ul>
+            <div class="nav-toggle"><span></span><span></span><span></span></div>
+        </div>
+    </nav>
+
+    <main style="padding-top: 100px;">
+        <div class="container">
+            <div class="text-center mb-3">
+                <h1 class="fade-in-up">Get Your Custom Diet Plan</h1>
+                <p class="fade-in-up" style="max-width: 650px; margin: 0 auto; color: var(--text-light);">Choose your goal and preferences, then generate a simple, structured meal plan.</p>
+            </div>
+
+            <div class="card fade-in-up">
+                <h2>Preferences</h2>
+                <div class="grid grid-3">
+                    <div class="form-group">
+                        <label class="form-label">Goal</label>
+                        <select id="goal" class="form-select">
+                            <option value="balanced">Balanced Nutrition</option>
+                            <option value="weight-loss">Weight Loss</option>
+                            <option value="muscle-gain">Muscle Gain</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Calories Target</label>
+                        <input id="targetCalories" type="number" class="form-input" placeholder="e.g., 2000" min="1000" max="4000">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Dietary Preferences</label>
+                        <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+                            <label><input type="checkbox" value="vegetarian"> Vegetarian</label>
+                            <label><input type="checkbox" value="vegan"> Vegan</label>
+                            <label><input type="checkbox" value="gluten-free"> Gluten-free</label>
+                            <label><input type="checkbox" value="dairy-free"> Dairy-free</label>
+                            <label><input type="checkbox" value="nut-free"> Nut-free</label>
+                        </div>
+                    </div>
+                </div>
+                <button id="generateBtn" class="btn btn-primary" style="margin-top:1rem;">Generate Plan</button>
+            </div>
+
+            <div id="planSummary" class="card fade-in-up" style="margin-top:1.5rem; display:none;"></div>
+
+            <div id="planContainer" class="grid grid-2 fade-in-up" style="margin-top:1rem;"></div>
+
+            <div class="text-center" style="margin-top:2rem;">
+                <a id="downloadBtn" class="btn btn-outline" style="display:none;">Download Plan</a>
+                <button id="resetBtn" class="btn btn-secondary" style="display:none;">Start Over</button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="index.html" class="footer-link">Home</a>
+                <a href="food-identification.html" class="footer-link">Food Analysis</a>
+                <a href="bmi-calculator.html" class="footer-link">BMI Calculator</a>
+                <a href="diet-plans.html" class="footer-link">Diet Plans</a>
+            </div>
+            <div style="border-top: 1px solid #444; padding-top: 2rem; margin-top: 2rem;">
+                <p>&copy; 2024 NutriSnap. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/utils.js"></script>
+    <script>
+        const goalEl = document.getElementById('goal');
+        const targetCaloriesEl = document.getElementById('targetCalories');
+        const generateBtn = document.getElementById('generateBtn');
+        const planContainer = document.getElementById('planContainer');
+        const planSummary = document.getElementById('planSummary');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        generateBtn.addEventListener('click', () => {
+            const goal = goalEl.value;
+            const calories = parseInt(targetCaloriesEl.value, 10) || 2000;
+            const prefs = Array.from(document.querySelectorAll('input[type=checkbox]:checked')).map(c => c.value);
+
+            const plan = generatePlan(goal, calories, prefs);
+            renderPlan(plan, goal, calories, prefs);
+        });
+
+        resetBtn.addEventListener('click', () => {
+            planContainer.innerHTML = '';
+            planSummary.style.display = 'none';
+            downloadBtn.style.display = 'none';
+            resetBtn.style.display = 'none';
+        });
+
+        function generatePlan(goal, calories, prefs) {
+            // Macro ratios by goal
+            const ratios = {
+                'balanced': { p: 0.25, c: 0.50, f: 0.25 },
+                'weight-loss': { p: 0.30, c: 0.45, f: 0.25 },
+                'muscle-gain': { p: 0.35, c: 0.45, f: 0.20 }
+            }[goal] || { p: 0.25, c: 0.50, f: 0.25 };
+
+            const macros = {
+                protein: Math.round((calories * ratios.p) / 4),
+                carbs: Math.round((calories * ratios.c) / 4),
+                fat: Math.round((calories * ratios.f) / 9)
+            };
+
+            const templates = getMealTemplates(prefs);
+            const meals = ['breakfast', 'lunch', 'dinner', 'snack'].map(type => pickMeal(templates[type]));
+            return { calories, macros, meals };
+        }
+
+        function getMealTemplates(prefs) {
+            const avoid = new Set(prefs);
+            const has = v => !avoid.has(v);
+
+            return {
+                breakfast: [
+                    { type:'breakfast', title:'Greek Yogurt Parfait', kcal: 400, items:['Greek yogurt','berries','granola'], icon:'🥣', class:'breakfast' },
+                    { type:'breakfast', title:'Veggie Omelette', kcal: 350, items:['eggs','spinach','tomatoes','cheese'], icon:'🍳', class:'breakfast' },
+                    { type:'breakfast', title:'Overnight Oats', kcal: 380, items:['oats','almond milk','banana','chia'], icon:'🥣', class:'breakfast' }
+                ].filter(m => has('vegan') ? m.title !== 'Veggie Omelette' : true).filter(m => has('dairy-free') ? !m.items.includes('cheese') && m.title!=='Greek Yogurt Parfait' : true),
+                lunch: [
+                    { type:'lunch', title:'Quinoa Salad Bowl', kcal: 550, items:['quinoa','chickpeas','cucumber','olive oil'], icon:'🥗', class:'lunch' },
+                    { type:'lunch', title:'Grilled Chicken Wrap', kcal: 600, items:['tortilla','chicken','lettuce','yogurt sauce'], icon:'🌯', class:'lunch' },
+                    { type:'lunch', title:'Tofu Stir-fry', kcal: 520, items:['tofu','broccoli','rice','soy sauce'], icon:'🥘', class:'lunch' }
+                ].filter(m => has('vegetarian') ? m.title !== 'Grilled Chicken Wrap' : true).filter(m => has('vegan') ? !m.items.includes('yogurt sauce') && m.title!=='Grilled Chicken Wrap' : true).filter(m => has('gluten-free') ? !m.items.includes('tortilla') : true),
+                dinner: [
+                    { type:'dinner', title:'Baked Salmon + Veggies', kcal: 650, items:['salmon','asparagus','sweet potato'], icon:'🐟', class:'dinner' },
+                    { type:'dinner', title:'Lentil Curry + Rice', kcal: 620, items:['lentils','tomatoes','rice'], icon:'🍛', class:'dinner' },
+                    { type:'dinner', title:'Turkey Chili', kcal: 600, items:['turkey','beans','tomatoes'], icon:'🍲', class:'dinner' }
+                ].filter(m => has('vegan') ? m.title !== 'Baked Salmon + Veggies' && m.title !== 'Turkey Chili' : true),
+                snack: [
+                    { type:'snack', title:'Apple + Peanut Butter', kcal: 200, items:['apple','peanut butter'], icon:'🍎', class:'snack' },
+                    { type:'snack', title:'Trail Mix', kcal: 220, items:['nuts','dried fruit'], icon:'🥜', class:'snack' },
+                    { type:'snack', title:'Hummus + Carrots', kcal: 180, items:['hummus','carrots'], icon:'🥕', class:'snack' }
+                ].filter(m => has('nut-free') ? !m.items.includes('nuts') && m.title!=='Apple + Peanut Butter' : true)
+            };
+        }
+
+        function pickMeal(list) {
+            return list[Math.floor(Math.random() * list.length)];
+        }
+
+        function renderPlan(plan, goal, calories, prefs) {
+            planContainer.innerHTML = '';
+
+            planSummary.style.display = 'block';
+            planSummary.innerHTML = `<strong>Goal:</strong> ${goal.replace('-', ' ')} · <strong>Target:</strong> ${calories} kcal · <strong>Prefs:</strong> ${prefs.join(', ') || 'none'}
+                <div style="margin-top:.5rem; color: var(--text-light);">Macros — Protein: ${plan.macros.protein}g · Carbs: ${plan.macros.carbs}g · Fat: ${plan.macros.fat}g</div>`;
+
+            plan.meals.forEach(meal => {
+                const card = document.createElement('div');
+                card.className = `meal-card ${meal.class}`;
+                card.innerHTML = `
+                    <div class="meal-header">
+                        <div class="meal-icon" style="background: var(--primary-green);">${meal.icon}</div>
+                        <div>
+                            <h3 style="margin:0;">${meal.title}</h3>
+                            <div style="color: var(--text-light);">Approx ${meal.kcal} kcal</div>
+                        </div>
+                    </div>
+                    <ul style="margin-left: 1.2rem; color: var(--text-light);">
+                        ${meal.items.map(i => `<li>${i}</li>`).join('')}
+                    </ul>
+                `;
+                planContainer.appendChild(card);
+            });
+
+            // Enable actions
+            downloadBtn.style.display = 'inline-block';
+            resetBtn.style.display = 'inline-block';
+
+            // Prepare downloadable JSON
+            const blob = new Blob([JSON.stringify(plan, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            downloadBtn.href = url;
+            downloadBtn.download = 'nutrisnap-plan.json';
+            downloadBtn.textContent = 'Download Plan';
+        }
+    </script>
+</body>
+</html>

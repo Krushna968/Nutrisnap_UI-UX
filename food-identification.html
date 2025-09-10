@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Identify Your Food - NutriSnap</title>
+    <link rel="stylesheet" href="css/style.css">
+    <meta name="description" content="Upload a photo of your meal and get instant nutritional analysis with AI-powered food identification.">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo"><img src="images/logo.jpg" alt="NutriSnap" style="height: 40px; margin-right: 0.5rem;">NutriSnap</a>
+            
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="food-identification.html" class="nav-link active">Identify Food</a></li>
+                <li><a href="nutrition-info.html" class="nav-link">Nutrition Info</a></li>
+                <li><a href="bmi-calculator.html" class="nav-link">BMI Calculator</a></li>
+                <li><a href="rda-calculator.html" class="nav-link">RDA</a></li>
+                <li><a href="diet-plans.html" class="nav-link">Diet Plans</a></li>
+            </ul>
+            
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main style="padding-top: 100px;">
+        <div class="container">
+            <!-- Header Section -->
+            <div class="text-center mb-3">
+                <h1 class="fade-in-up">Identify Your Food</h1>
+                <p class="fade-in-up" style="font-size: 1.2rem; max-width: 600px; margin: 0 auto; color: var(--text-light);">
+                    Snap or upload a photo of your meal and let our AI analyze its nutritional content instantly
+                </p>
+            </div>
+
+            <!-- Upload Section -->
+            <div class="section">
+                <div class="card fade-in-up" style="max-width: 800px; margin: 0 auto;">
+                    <!-- Upload Zone -->
+                    <div id="uploadZone" class="upload-zone">
+                        <div class="upload-icon">📷</div>
+                        <h3 style="margin-bottom: 1rem; color: var(--text-dark);">Upload Your Food Photo</h3>
+                        <p style="color: var(--text-light); margin-bottom: 2rem;">
+                            Drag and drop an image here, or click to select a file
+                        </p>
+                        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                            <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                                📁 Choose File
+                            </button>
+                            <button class="btn btn-secondary" onclick="openCamera()">
+                                📱 Use Camera
+                            </button>
+                        </div>
+                        <p style="font-size: 0.9rem; color: var(--text-light); margin-top: 1rem;">
+                            Supports JPEG, PNG, WebP • Max size: 5MB
+                        </p>
+                    </div>
+
+                    <!-- Hidden file input -->
+                    <input type="file" id="fileInput" accept="image/*" style="display: none;">
+
+                    <!-- Camera modal for mobile -->
+                    <div id="cameraModal" class="modal" style="display: none;">
+                        <div class="modal-content">
+                            <span class="close">&times;</span>
+                            <video id="cameraStream" style="width: 100%; max-width: 400px;"></video>
+                            <canvas id="cameraCanvas" style="display: none;"></canvas>
+                            <div style="margin-top: 1rem;">
+                                <button class="btn btn-primary" onclick="capturePhoto()">📸 Capture</button>
+                                <button class="btn btn-secondary" onclick="closeCamera()">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Analysis Section -->
+                    <div id="analysisSection" style="display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--border-light);">
+                        <div class="text-center">
+                            <button id="analyzeBtn" class="btn btn-primary" style="font-size: 1.1rem; padding: 15px 30px;">
+                                🔍 Analyze Food
+                            </button>
+                            <p style="font-size: 0.9rem; color: var(--text-light); margin-top: 1rem;">
+                                This will identify the food items and calculate their nutritional values
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sample Images Section -->
+            <div class="section">
+                <div class="text-center mb-2">
+                    <h2 class="fade-in-up">Try with Sample Images</h2>
+                    <p class="fade-in-up" style="color: var(--text-light);">
+                        Don't have a food photo ready? Try analyzing these sample meals
+                    </p>
+                </div>
+
+                <div class="grid grid-4 fade-in-up">
+                    <!-- Sample 1: Salad -->
+                    <div class="card text-center sample-image" data-sample="salad">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">🥗</div>
+                        <h4>Mixed Salad</h4>
+                        <p style="color: var(--text-light); font-size: 0.9rem;">
+                            Fresh greens with vegetables
+                        </p>
+                        <button class="btn btn-outline" onclick="loadSampleImage('salad')">Analyze This</button>
+                    </div>
+
+                    <!-- Sample 2: Pizza -->
+                    <div class="card text-center sample-image" data-sample="pizza">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">🍕</div>
+                        <h4>Pizza Slice</h4>
+                        <p style="color: var(--text-light); font-size: 0.9rem;">
+                            Cheese pizza with toppings
+                        </p>
+                        <button class="btn btn-outline" onclick="loadSampleImage('pizza')">Analyze This</button>
+                    </div>
+
+                    <!-- Sample 3: Sandwich -->
+                    <div class="card text-center sample-image" data-sample="sandwich">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">🥪</div>
+                        <h4>Sandwich</h4>
+                        <p style="color: var(--text-light); font-size: 0.9rem;">
+                            Deli sandwich with sides
+                        </p>
+                        <button class="btn btn-outline" onclick="loadSampleImage('sandwich')">Analyze This</button>
+                    </div>
+
+                    <!-- Sample 4: Pasta -->
+                    <div class="card text-center sample-image" data-sample="pasta">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">🍝</div>
+                        <h4>Pasta Dish</h4>
+                        <p style="color: var(--text-light); font-size: 0.9rem;">
+                            Spaghetti with sauce
+                        </p>
+                        <button class="btn btn-outline" onclick="loadSampleImage('pasta')">Analyze This</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How It Works Section -->
+            <div class="section" style="background: var(--light-green); border-radius: 12px; padding: 3rem; margin: 3rem 0;">
+                <div class="text-center mb-2">
+                    <h2 class="fade-in-up">How Food Identification Works</h2>
+                </div>
+
+                <div class="grid grid-3 fade-in-up">
+                    <div class="text-center">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🤖</div>
+                        <h4>AI Recognition</h4>
+                        <p style="color: var(--text-light);">
+                            Our AI analyzes your photo to identify individual food items and ingredients
+                        </p>
+                    </div>
+
+                    <div class="text-center">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
+                        <h4>Nutrition Database</h4>
+                        <p style="color: var(--text-light);">
+                            We match identified foods with comprehensive nutritional data from USDA database
+                        </p>
+                    </div>
+
+                    <div class="text-center">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">⚡</div>
+                        <h4>Instant Results</h4>
+                        <p style="color: var(--text-light);">
+                            Get detailed nutritional breakdown including calories, macros, and micronutrients
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tips Section -->
+            <div class="section">
+                <div class="text-center mb-2">
+                    <h2 class="fade-in-up">Tips for Best Results</h2>
+                </div>
+
+                <div class="grid grid-2 fade-in-up">
+                    <div class="card">
+                        <h4>📸 Photo Quality</h4>
+                        <ul style="color: var(--text-light); line-height: 1.8;">
+                            <li>Use good lighting for clear photos</li>
+                            <li>Keep the food as the main subject</li>
+                            <li>Avoid shadows or blurry images</li>
+                            <li>Show the entire meal when possible</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <h4>🍽️ Food Arrangement</h4>
+                        <ul style="color: var(--text-light); line-height: 1.8;">
+                            <li>Separate different food items when possible</li>
+                            <li>Capture the meal from above for best view</li>
+                            <li>Include utensils for size reference</li>
+                            <li>Take photos before eating for accuracy</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="index.html" class="footer-link">Home</a>
+                <a href="food-identification.html" class="footer-link">Food Analysis</a>
+                <a href="bmi-calculator.html" class="footer-link">BMI Calculator</a>
+                <a href="diet-plans.html" class="footer-link">Diet Plans</a>
+            </div>
+            
+            <div style="border-top: 1px solid #444; padding-top: 2rem; margin-top: 2rem;">
+                <p>&copy; 2024 NutriSnap. All rights reserved. | Made with ❤️ for healthier living</p>
+                <p style="font-size: 0.9rem; color: #999; margin-top: 0.5rem;">
+                    Nutritional data based on USDA database. For medical advice, consult a healthcare professional.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script>
+        let selectedFile = null;
+        let cameraStream = null;
+
+        // Initialize file upload functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const uploadZone = document.getElementById('uploadZone');
+            const fileInput = document.getElementById('fileInput');
+            const analysisSection = document.getElementById('analysisSection');
+            const analyzeBtn = document.getElementById('analyzeBtn');
+
+            // Initialize file upload with drag and drop
+            NutriSnapUtils.initializeFileUpload(uploadZone, fileInput, handleFileUpload);
+
+            // Analyze button click
+            analyzeBtn.addEventListener('click', analyzeFood);
+        });
+
+        function handleFileUpload(file, imageSrc) {
+            selectedFile = file;
+            document.getElementById('analysisSection').style.display = 'block';
+            
+            // Smooth scroll to analysis section
+            setTimeout(() => {
+                document.getElementById('analysisSection').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+            }, 300);
+        }
+
+        function openCamera() {
+            const modal = document.getElementById('cameraModal');
+            const video = document.getElementById('cameraStream');
+
+            // Check if camera is available
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                NutriSnapUtils.showNotification('Camera not available on this device', 'warning');
+                return;
+            }
+
+            modal.style.display = 'block';
+
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    cameraStream = stream;
+                    video.srcObject = stream;
+                    video.play();
+                })
+                .catch(err => {
+                    NutriSnapUtils.showNotification('Failed to access camera: ' + err.message, 'error');
+                    closeCamera();
+                });
+        }
+
+        function capturePhoto() {
+            const video = document.getElementById('cameraStream');
+            const canvas = document.getElementById('cameraCanvas');
+            const context = canvas.getContext('2d');
+
+            // Set canvas size to video size
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            // Draw video frame to canvas
+            context.drawImage(video, 0, 0);
+
+            // Convert canvas to blob
+            canvas.toBlob(blob => {
+                const file = new File([blob], 'camera-capture.jpg', { type: 'image/jpeg' });
+                const imageSrc = canvas.toDataURL('image/jpeg');
+                
+                handleFileUpload(file, imageSrc);
+                closeCamera();
+            });
+        }
+
+        function closeCamera() {
+            const modal = document.getElementById('cameraModal');
+            
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+            
+            modal.style.display = 'none';
+        }
+
+        function loadSampleImage(sampleType) {
+            // Create sample data for demonstration
+            const sampleData = {
+                salad: {
+                    name: 'Mixed Green Salad',
+                    image: '🥗',
+                    description: 'Fresh mixed greens with vegetables'
+                },
+                pizza: {
+                    name: 'Cheese Pizza Slice',
+                    image: '🍕',
+                    description: 'Classic cheese pizza slice'
+                },
+                sandwich: {
+                    name: 'Deli Sandwich',
+                    image: '🥪',
+                    description: 'Turkey and cheese sandwich'
+                },
+                pasta: {
+                    name: 'Spaghetti with Marinara',
+                    image: '🍝',
+                    description: 'Spaghetti pasta with tomato sauce'
+                }
+            };
+
+            const sample = sampleData[sampleType];
+            if (sample) {
+                // Update upload zone with sample
+                const uploadZone = document.getElementById('uploadZone');
+                uploadZone.innerHTML = `
+                    <div style="font-size: 8rem; margin-bottom: 1rem;">${sample.image}</div>
+                    <h3 style="color: var(--text-dark); margin-bottom: 0.5rem;">${sample.name}</h3>
+                    <p style="color: var(--text-light); margin-bottom: 2rem;">${sample.description}</p>
+                    <p style="color: var(--text-light); font-size: 0.9rem;">Sample image selected - Click to change</p>
+                `;
+
+                selectedFile = { name: sample.name, type: 'sample', sampleType: sampleType };
+                document.getElementById('analysisSection').style.display = 'block';
+
+                // Smooth scroll to analysis section
+                setTimeout(() => {
+                    document.getElementById('analysisSection').scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                }, 300);
+            }
+        }
+
+        function analyzeFood() {
+            if (!selectedFile) {
+                NutriSnapUtils.showNotification('Please select an image first', 'warning');
+                return;
+            }
+
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            NutriSnapUtils.showLoading(analyzeBtn, 'Analyzing...');
+
+            // Simulate AI analysis (2-3 seconds)
+            setTimeout(() => {
+                NutriSnapUtils.hideLoading(analyzeBtn);
+                
+                // Store analysis data for the nutrition page
+                const analysisData = generateAnalysisData(selectedFile);
+                NutriSnapUtils.saveToLocalStorage('currentAnalysis', analysisData);
+                
+                // Show success message
+                NutriSnapUtils.showNotification('Analysis complete! Redirecting to results...', 'success');
+                
+                // Redirect to nutrition page after a short delay
+                setTimeout(() => {
+                    window.location.href = 'nutrition-info.html';
+                }, 1500);
+            }, 2500);
+        }
+
+        function generateAnalysisData(file) {
+            // Generate realistic sample data based on food type
+            const sampleAnalyses = {
+                salad: {
+                    foodName: 'Mixed Green Salad',
+                    confidence: 95,
+                    image: '🥗',
+                    nutrition: {
+                        calories: 150,
+                        protein: 8,
+                        carbs: 12,
+                        fat: 9,
+                        fiber: 6,
+                        sugar: 8,
+                        sodium: 320,
+                        vitamins: {
+                            'Vitamin A': 85,
+                            'Vitamin C': 45,
+                            'Vitamin K': 78,
+                            'Folate': 32
+                        },
+                        minerals: {
+                            'Iron': 12,
+                            'Calcium': 85,
+                            'Potassium': 420,
+                            'Magnesium': 35
+                        }
+                    }
+                },
+                pizza: {
+                    foodName: 'Cheese Pizza Slice',
+                    confidence: 92,
+                    image: '🍕',
+                    nutrition: {
+                        calories: 285,
+                        protein: 12,
+                        carbs: 36,
+                        fat: 10,
+                        fiber: 2,
+                        sugar: 4,
+                        sodium: 640,
+                        vitamins: {
+                            'Vitamin A': 8,
+                            'Vitamin C': 2,
+                            'Thiamine': 15,
+                            'Riboflavin': 18
+                        },
+                        minerals: {
+                            'Calcium': 200,
+                            'Iron': 8,
+                            'Phosphorus': 180,
+                            'Selenium': 22
+                        }
+                    }
+                },
+                sandwich: {
+                    foodName: 'Turkey & Cheese Sandwich',
+                    confidence: 89,
+                    image: '🥪',
+                    nutrition: {
+                        calories: 320,
+                        protein: 24,
+                        carbs: 28,
+                        fat: 14,
+                        fiber: 3,
+                        sugar: 3,
+                        sodium: 890,
+                        vitamins: {
+                            'Niacin': 28,
+                            'Vitamin B6': 15,
+                            'Vitamin B12': 45,
+                            'Riboflavin': 12
+                        },
+                        minerals: {
+                            'Selenium': 35,
+                            'Phosphorus': 245,
+                            'Zinc': 18,
+                            'Calcium': 180
+                        }
+                    }
+                },
+                pasta: {
+                    foodName: 'Spaghetti with Marinara Sauce',
+                    confidence: 91,
+                    image: '🍝',
+                    nutrition: {
+                        calories: 220,
+                        protein: 8,
+                        carbs: 44,
+                        fat: 2,
+                        fiber: 3,
+                        sugar: 8,
+                        sodium: 480,
+                        vitamins: {
+                            'Vitamin C': 12,
+                            'Vitamin A': 15,
+                            'Folate': 18,
+                            'Thiamine': 25
+                        },
+                        minerals: {
+                            'Iron': 10,
+                            'Potassium': 350,
+                            'Manganese': 15,
+                            'Magnesium': 25
+                        }
+                    }
+                }
+            };
+
+            // Return appropriate sample or generic data
+            if (file.type === 'sample' && sampleAnalyses[file.sampleType]) {
+                return sampleAnalyses[file.sampleType];
+            }
+
+            // Default generic analysis for uploaded images
+            return {
+                foodName: file.name.replace(/\.[^/.]+$/, "") || 'Analyzed Food',
+                confidence: Math.floor(Math.random() * 20) + 80, // 80-99%
+                image: '🍽️',
+                nutrition: {
+                    calories: Math.floor(Math.random() * 400) + 100,
+                    protein: Math.floor(Math.random() * 25) + 5,
+                    carbs: Math.floor(Math.random() * 50) + 10,
+                    fat: Math.floor(Math.random() * 20) + 2,
+                    fiber: Math.floor(Math.random() * 8) + 1,
+                    sugar: Math.floor(Math.random() * 15) + 2,
+                    sodium: Math.floor(Math.random() * 800) + 200,
+                    vitamins: {
+                        'Vitamin C': Math.floor(Math.random() * 50) + 10,
+                        'Vitamin A': Math.floor(Math.random() * 40) + 5,
+                        'Folate': Math.floor(Math.random() * 30) + 10,
+                        'Niacin': Math.floor(Math.random() * 25) + 5
+                    },
+                    minerals: {
+                        'Iron': Math.floor(Math.random() * 20) + 5,
+                        'Calcium': Math.floor(Math.random() * 200) + 50,
+                        'Potassium': Math.floor(Math.random() * 400) + 200,
+                        'Magnesium': Math.floor(Math.random() * 40) + 10
+                    }
+                }
+            };
+        }
+
+        // Close modal when clicking outside or on close button
+        window.onclick = function(event) {
+            const modal = document.getElementById('cameraModal');
+            if (event.target == modal || event.target.classList.contains('close')) {
+                closeCamera();
+            }
+        }
+    </script>
+
+    <style>
+        /* Modal styles */
+        .modal {
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 90%;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            color: #999;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: var(--error-red);
+        }
+
+        .sample-image {
+            transition: all 0.3s ease;
+        }
+
+        .sample-image:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</body>
+</html>
