@@ -1,5 +1,7 @@
 # NutriSnap Frontend Website
 
+🌟 **Live Demo:** [https://krushna968.github.io/Nutrisnap_UI-UX/](https://krushna968.github.io/Nutrisnap_UI-UX/)
+
 A comprehensive 6-page nutrition analysis website built with HTML, CSS, and JavaScript.
 
 ## Pages Overview
@@ -40,12 +42,17 @@ A comprehensive 6-page nutrition analysis website built with HTML, CSS, and Java
 
 ## Usage
 
-1. **Open the website**: Double-click `index.html` to open in your browser
-2. **Upload food photos**: Use the "Identify Food" page to analyze meals
-3. **View nutrition data**: See detailed breakdowns with macros and micros
-4. **Calculate BMI**: Enter height/weight for BMI analysis
-5. **Get RDA**: Personalized daily nutrition recommendations
-6. **Create diet plans**: Generate meal plans based on goals and preferences
+### 🌐 Online (Recommended)
+Visit the live website: **[https://krushna968.github.io/Nutrisnap_UI-UX/](https://krushna968.github.io/Nutrisnap_UI-UX/)**
+
+### 💻 Local Development
+1. **Clone the repository**: `git clone https://github.com/Krushna968/Nutrisnap_UI-UX.git`
+2. **Open locally**: Double-click `index.html` to open in your browser
+3. **Upload food photos**: Use the "Identify Food" page to analyze meals
+4. **View nutrition data**: See detailed breakdowns with macros and micros
+5. **Calculate BMI**: Enter height/weight for BMI analysis
+6. **Get RDA**: Personalized daily nutrition recommendations
+7. **Create diet plans**: Generate meal plans based on goals and preferences
 
 ## Technical Details
 
@@ -81,5 +88,13 @@ nutrisnap-website/
 - All nutrition data is for educational purposes
 - Built following health website design best practices
 - Icons are emoji-based for cross-platform compatibility
+
+## 🚀 Deployment
+
+- **GitHub Repository**: [https://github.com/Krushna968/Nutrisnap_UI-UX](https://github.com/Krushna968/Nutrisnap_UI-UX)
+- **Live Website**: [https://krushna968.github.io/Nutrisnap_UI-UX/](https://krushna968.github.io/Nutrisnap_UI-UX/)
+- **Deployed via**: GitHub Pages
+- **Logo Integration**: Custom logo.jpg used throughout navigation
+- **Enhanced Animations**: Floating elements, pulse effects, and smooth transitions
 
 **Created with ❤️ for healthier living**
